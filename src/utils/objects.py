@@ -14,4 +14,4 @@ class Analyst(BaseModel):
 
 
 class Perspectives(BaseModel):
-    analyst:List[Analyst] = Field(description="comprehensive list of analysts with their roles affiliation")
+    analysts:List[Analyst] = Field(description="comprehensive list of analysts with their roles affiliation")

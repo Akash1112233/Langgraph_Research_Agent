@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
-from states import GenerateAnalystsState
-from models import llm
-from objects import Analyst,Perspectives
-from prompts import analyst_instructions
+from src.utils.states import GenerateAnalystsState
+from src.utils.models import llm
+from src.utils.objects import Analyst,Perspectives
+from src.utils.prompts import analyst_instructions
 from langchain.messages import SystemMessage,HumanMessage
 load_dotenv()
 

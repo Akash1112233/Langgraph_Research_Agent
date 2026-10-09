@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from utils.nodes import create_analysts
-from utils.states import GenerateAnalystsState
+from src.utils.nodes import create_analysts
+from src.utils.states import GenerateAnalystsState
 from langgraph.graph import START,END,StateGraph
 load_dotenv()
 
