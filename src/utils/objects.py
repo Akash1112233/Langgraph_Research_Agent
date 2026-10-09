@@ -8,4 +8,10 @@ class Analyst(BaseModel):
     role:str = Field(description="Role of the Analyst in the context of topic")
     description:str = Field(description="Description of the analyst foucs,concerns and motives")
 
-    
+    @property
+    def persona(self)->str:
+        return f"Name: {self.name}\nRole: {self.role}\nAffiliation: {self.affiliation}\nDescription: {self.description}"
+
+
+class Perspectives(BaseModel):
+    analyst:List[Analyst] = Field(description="comprehensive list of analysts with their roles affiliation")
