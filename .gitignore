@@ -7,7 +7,6 @@ wheels/
 *.egg-info
 .claude/
 module1/
-langgraph.json
 .langgraph_api/
 
 # Virtual environments
