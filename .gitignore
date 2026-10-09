@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.claude/
+module1/
+langgraph.json
+.langgraph_api/
+
+# Virtual environments
+.venv
+.env
