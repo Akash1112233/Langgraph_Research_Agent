@@ -53,20 +53,35 @@ def human_feedback(state:GenerateAnalystsState):
         return {"human_analyst_feedback":feedback}
     return {"human_analyst_feedback":feedback}
 
-def generate_question(state:InterviewState):
-    """node to generate the question"""
+def generate_question(state: InterviewState):
+    """Generate the analyst's next interview question."""
+
     analyst = state["analyst"]
 
-    if isinstance(analyst,dict):
+    if isinstance(analyst, dict):
         analyst = Analyst.model_validate(analyst)
 
     messages = state["messages"]
 
-    system_message = question_instructions.format(goals= analyst.persona)
+    system_message = question_instructions.format(
+        goals=analyst.persona
+    )
 
-    question = llm.invoke([SystemMessage(content=system_message)]+messages)
+    question = llm.invoke(
+        [
+            SystemMessage(content=system_message),
+            *messages,
+            HumanMessage(
+                content=(
+                    "Ask the next specific question to the expert. "
+                    "If you have enough information, end the interview "
+                    "with: Thank you so much for your help!"
+                )
+            )
+        ]
+    )
 
-    return {"messages":[question]}
+    return {"messages": [question]}
 
 
 def search_web(state:InterviewState):
@@ -139,30 +154,37 @@ def search_web2(state:InterviewState):
     return {"context":[formatted_search_docs]}
 
 
-def generate_answer(state:InterviewState):
-    """Node to answer the Question"""
+def generate_answer(state: InterviewState):
+    """Node to answer the analyst's question."""
 
     analyst = state["analyst"]
     messages = state["messages"]
     context = state["context"]
 
-    if isinstance(analyst,dict):
+    if isinstance(analyst, dict):
         analyst = Analyst.model_validate(analyst)
 
-    #answer Question
-    system_message = answer_instructions.format(goals=analyst.persona,context=context)
+    # Prepare the system instructions
+    system_message = answer_instructions.format(
+        goals=analyst.persona,
+        context=context
+    )
+
+    # Generate the expert's answer
     answer = llm.invoke(
-        [SystemMessage(content=system_message)]
-        + messages
-        + [
+        [
+            SystemMessage(content=system_message),
+            *messages,
             HumanMessage(
-            content="Answer the analyst's latest question using only the supplied context."
+                content="Answer the analyst's latest question using only the provided context."
             )
         ]
-)
+    )
 
+    # Mark the response as coming from the expert
     answer.name = "expert"
 
+    # Append the expert's answer to the conversation history
     return {"messages": [answer]}
 
 def save_interview(state:InterviewState):
