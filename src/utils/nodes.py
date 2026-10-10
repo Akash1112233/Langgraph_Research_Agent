@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from src.utils.states import GenerateAnalystsState,InterviewState
 from src.utils.models import llm
 from src.utils.objects import Analyst,Perspectives,SearchQuery
-from src.utils.prompts import analyst_instructions,question_instructions,search_instructions,answer_instructions
+from src.utils.prompts import analyst_instructions,question_instructions,section_writer_instructions,search_instructions,answer_instructions
 from langchain.messages import SystemMessage,HumanMessage
 from langgraph.types import interrupt
 from langchain_tavily import TavilySearch
@@ -149,3 +149,21 @@ def save_interview(state:InterviewState):
     interview = get_buffer_string(messages)
 
     return {"interview":interview}
+
+def write_section(state:InterviewState):
+    """node ot answer a question"""
+
+    interview = state["interview"]
+    context = state["context"]
+    analyst = state["analyst"]
+
+    if isinstance(analyst,dict):
+        analyst = Analyst.model_validate(analyst)
+
+    system_message = section_writer_instructions.format(focus = analyst.description)
+
+    section = llm.invoke([SystemMessage(content=system_message)]+
+                         HumanMessage(content= f"Use this source to write your section:{context}"))
+
+    return {"sections":[section.content]}
+
