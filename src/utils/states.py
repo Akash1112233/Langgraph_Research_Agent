@@ -12,7 +12,7 @@ class GenerateAnalystsState(TypedDict):
 
 class InterviewState(MessagesState):
     max_num_turns:int # no turns of conversations
-    content : Annotated[list,operator.add] #source of docs
+    context : Annotated[list,operator.add] #source of docs
     analyst : Analyst # My analyst
     interview:str #interview Transcript
     section:list
