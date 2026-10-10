@@ -79,7 +79,15 @@ def search_web(state:InterviewState):
     search_instruction_system_message = SystemMessage(content = search_instructions)
     tavily_search = TavilySearch(max_results = 2)
 
-    search_query = structured_llm.invoke([search_instruction_system_message]+state["messages"])
+    search_query = structured_llm.invoke(
+        [search_instruction_system_message]
+        + state["messages"]
+        + [
+            HumanMessage(
+                content="Convert the analyst's final question into a well-structured web search query."
+            )
+        ]
+)
 
     # Search
     data = tavily_search.invoke({"query":search_query.search_query})
@@ -106,7 +114,15 @@ def search_web2(state:InterviewState):
     search_instruction_system_message = SystemMessage(content = search_instructions)
     tavily_search = TavilySearch(max_results = 2)
 
-    search_query = structured_llm.invoke([search_instruction_system_message]+state["messages"])
+    search_query = structured_llm.invoke(
+        [search_instruction_system_message]
+            + state["messages"]
+            + [
+                HumanMessage(
+                content="Convert the analyst's final question into a well-structured web search query."
+                )
+            ]
+)
 
     # Search
     data = tavily_search.invoke({"query":search_query.search_query})
@@ -135,13 +151,19 @@ def generate_answer(state:InterviewState):
 
     #answer Question
     system_message = answer_instructions.format(goals=analyst.persona,context=context)
-    answer = llm.invoke([SystemMessage(content=system_message)]+messages)
+    answer = llm.invoke(
+        [SystemMessage(content=system_message)]
+        + messages
+        + [
+            HumanMessage(
+            content="Answer the analyst's latest question using only the supplied context."
+            )
+        ]
+)
 
-    #name the message as comming from the except
-    answer.expect = "export"
+    answer.name = "expert"
 
-    #append to the state
-    return {"message":[answer]}
+    return {"messages": [answer]}
 
 def save_interview(state:InterviewState):
     """save the interviews"""
