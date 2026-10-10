@@ -1,10 +1,11 @@
 from dotenv import load_dotenv
 from src.utils.states import GenerateAnalystsState,InterviewState
 from src.utils.models import llm
-from src.utils.objects import Analyst,Perspectives
-from src.utils.prompts import analyst_instructions,question_instructions
+from src.utils.objects import Analyst,Perspectives,SearchQuery
+from src.utils.prompts import analyst_instructions,question_instructions,search_instructions
 from langchain.messages import SystemMessage,HumanMessage
 from langgraph.types import interrupt
+from langchain_tavily import TavilySearch
 
 load_dotenv()
 
@@ -65,4 +66,59 @@ def generate_question(state:InterviewState):
     question = llm.invoke([SystemMessage(content=system_message)]+messages)
 
     return {"messages":[question]}
+
+
+def search_web(state:InterviewState):
+    """Retrive docs from web"""
+
+    # search query
+    structured_llm = llm.with_structured_output(SearchQuery)
+
+    # Search Instruction
+    search_instruction_system_message = SystemMessage(content = search_instructions)
+    tavily_search = TavilySearch(max_results = 2)
+
+    search_query = structured_llm.invoke([search_instruction_system_message]+state["messages"])
+
+    # Search
+    data = tavily_search.invoke({"query":search_query.search_query})
+    search_docs = data.get("results",data)
+
+    #format
+    # format
+    formatted_search_docs = "\n\n---\n\n".join(
+        [
+            f'<Document href="{doc["url"]}"/>\n{doc["content"]}\n</Document>'
+            for doc in search_docs
+        ]
+    )
+    return {"context":[formatted_search_docs]}
+
+
+def search_web2(state:InterviewState):
+    """Retrive docs from web"""
+
+    # search query
+    structured_llm = llm.with_structured_output(SearchQuery)
+
+    # Search Instruction
+    search_instruction_system_message = SystemMessage(content = search_instructions)
+    tavily_search = TavilySearch(max_results = 2)
+
+    search_query = structured_llm.invoke([search_instruction_system_message]+state["messages"])
+
+    # Search
+    data = tavily_search.invoke({"query":search_query.search_query})
+    search_docs = data.get("results",data)
+
+    #format
+    # format
+    formatted_search_docs = "\n\n---\n\n".join(
+        [
+            f'<Document href="{doc["url"]}"/>\n{doc["content"]}\n</Document>'
+            for doc in search_docs
+        ]
+    )
+    return {"context":[formatted_search_docs]}
+
 

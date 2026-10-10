@@ -15,3 +15,7 @@ class Analyst(BaseModel):
 
 class Perspectives(BaseModel):
     analysts:List[Analyst] = Field(description="comprehensive list of analysts with their roles affiliation")
+
+
+class SearchQuery(BaseModel):
+    search_query : str = Field(description="Search query for retrival")
