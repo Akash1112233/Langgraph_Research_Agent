@@ -206,8 +206,12 @@ def write_section(state:InterviewState):
 
     system_message = section_writer_instructions.format(focus = analyst.description)
 
-    section = llm.invoke([SystemMessage(content=system_message)]+
-                         HumanMessage(content= f"Use this source to write your section:{context}"))
+    section = llm.invoke(
+    [
+        SystemMessage(content=system_message),
+        HumanMessage(content=f"Use this source to write your section: {context}")
+    ]
+    )
 
     return {"sections":[section.content]}
 

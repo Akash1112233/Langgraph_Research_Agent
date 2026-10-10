@@ -1,31 +1,43 @@
-# from dotenv import load_dotenv
-# load_dotenv()
-# from langchain_google_genai import ChatGoogleGenerativeAI
-
-# llm = ChatGoogleGenerativeAI(model="gemini-3.8-flash",temperature= 0)
-
-import os
-
 from dotenv import load_dotenv
-from langchain_groq import ChatGroq
-
 load_dotenv()
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+llm = ChatGoogleGenerativeAI(model="gemini-3.8-flash",temperature= 0)
 
-if not GROQ_API_KEY:
-    raise ValueError(
-        "GROQ_API_KEY is missing. Add it to your .env file."
-    )
+# import os
 
-# Main model for the LangGraph Research Agent
-llm = ChatGroq(
-    model="openai/gpt-oss-20b",
-    api_key=GROQ_API_KEY,
-    temperature=0,
-    max_tokens=2048,
-)
+# from dotenv import load_dotenv
+# from langchain_groq import ChatGroq
 
-# Use the same model for structured output, if needed
-structured_llm = llm
+# load_dotenv()
+
+# GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# if not GROQ_API_KEY:
+#     raise ValueError(
+#         "GROQ_API_KEY is missing. Add it to your .env file."
+#     )
+
+# # Main model for the LangGraph Research Agent
+# llm = ChatGroq(
+#     model="openai/gpt-oss-20b",
+#     api_key=GROQ_API_KEY,
+#     temperature=0,
+#     max_tokens=2048,
+# )
+
+# # Use the same model for structured output, if needed
+# structured_llm = llm
+
+# from langchain_ollama import ChatOllama
+
+# # Use only the local Ollama model
+# llm = ChatOllama(
+#     model="qwen3:14b",
+#     temperature=0,
+# )
+
+# No Google or Groq API required.
+# Create structured-output models in nodes.py
+# using llm.with_structured_output(YourPydanticSchema)
 
